@@ -75,6 +75,17 @@ public class ConfigurationUtils {
 		}
 	}
 
+	public static MemorySize getTaskManagerOverHeadMemory(Configuration configuration) {
+		if (configuration.containsKey(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY.key())) {
+			return MemorySize.parse(configuration.getString(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY));
+		} else if (configuration.containsKey(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY_MB.key())) {
+			return MemorySize.parse(configuration.getInteger(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY_MB) + "m");
+		} else {
+			//use default value
+			return MemorySize.parse(configuration.getString(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY));
+		}
+	}
+
 	/**
 	 * @return extracted {@link MetricOptions#SYSTEM_RESOURCE_METRICS_PROBING_INTERVAL} or {@code Optional.empty()} if
 	 * {@link MetricOptions#SYSTEM_RESOURCE_METRICS} are disabled.

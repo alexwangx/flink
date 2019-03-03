@@ -51,4 +51,16 @@ public class ConfigurationUtilsTest extends TestLogger {
 		assertThat(configuration.toMap().size(), is(properties.size()));
 	}
 
+	@Test
+	public void testPropertiesMemOverHeadToConfiguration() {
+		final Properties properties = new Properties();
+		properties.setProperty("taskmanager.over.head.size", "2048m");
+		final Configuration configuration = ConfigurationUtils.createConfiguration(properties);
+		assertThat(configuration.getString("taskmanager.over.head.size", ""), is(equalTo(properties.getProperty("taskmanager.over.head.size"))));
+		assertThat(configuration.toMap().size(), is(properties.size()));
+
+		MemorySize memorySize = ConfigurationUtils.getTaskManagerOverHeadMemory(configuration);
+		assertThat(memorySize.getMebiBytes(), is(equalTo(2048)));
+	}
+
 }

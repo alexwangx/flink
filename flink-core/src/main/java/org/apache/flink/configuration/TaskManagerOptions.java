@@ -34,6 +34,31 @@ public class TaskManagerOptions {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * JVM over head size (in megabytes) for the TaskManagers.
+	 *
+	 * @deprecated use {@link #TASK_MANAGER_OVER_HEAD_MEMORY}
+	 */
+	public static final ConfigOption<Integer> TASK_MANAGER_OVER_HEAD_MEMORY_MB =
+		key("taskmanager.over.head.mb")
+			.defaultValue(1024)
+			.withDescription("JVM over head  size (in megabytes) for the TaskManagers, which are the parallel workers of" +
+				" the system. On YARN setups, this value is automatically configured to the size of the TaskManager's" +
+				" YARN container, minus a certain tolerance value.");
+
+	/**
+	 * JVM  off - heap size for the TaskManagers with memory size.
+	 */
+	@Documentation.CommonOption(position = Documentation.CommonOption.POSITION_MEMORY)
+	public static final ConfigOption<String> TASK_MANAGER_OVER_HEAD_MEMORY =
+		key("taskmanager.over.head.size")
+			.defaultValue("1024m")
+			.withDescription("JVM heap size for the TaskManagers, which are the parallel workers of" +
+				" the system. On YARN setups, this value is automatically configured to the size of the TaskManager's" +
+				" YARN container, minus a certain tolerance value.");
+
+
+
+	/**
 	 * JVM heap size for the TaskManagers with memory size.
 	 */
 	@Documentation.CommonOption(position = Documentation.CommonOption.POSITION_MEMORY)
