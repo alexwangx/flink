@@ -178,8 +178,15 @@ public class YarnResourceManager extends ResourceManager<YarnWorkerNode> impleme
 
 		this.webInterfaceUrl = webInterfaceUrl;
 		this.numberOfTaskSlots = flinkConfig.getInteger(TaskManagerOptions.NUM_TASK_SLOTS);
-		this.defaultTaskManagerMemoryMB = ConfigurationUtils.getTaskManagerHeapMemory(flinkConfig).getMebiBytes();
+
+		int overHeadMem = ConfigurationUtils.getTaskManagerOverHeadMemory(flinkConfig).getMebiBytes();
+		this.defaultTaskManagerMemoryMB = ConfigurationUtils.getTaskManagerHeapMemory(flinkConfig).getMebiBytes()
+			+ overHeadMem;
+
 		this.defaultCpus = flinkConfig.getInteger(YarnConfigOptions.VCORES, numberOfTaskSlots);
+
+		log.debug("The task manager over head memory is {} ," +
+			" task manager heap memory is {} . ", overHeadMem, defaultTaskManagerMemoryMB);
 
 		this.resource = Resource.newInstance(defaultTaskManagerMemoryMB, defaultCpus);
 	}
@@ -531,8 +538,19 @@ public class YarnResourceManager extends ResourceManager<YarnWorkerNode> impleme
 		// init the ContainerLaunchContext
 		final String currDir = env.get(ApplicationConstants.Environment.PWD.key());
 
+		long totalMemory = resource.getMemory();
+		long overHeadMemory = ConfigurationUtils.getTaskManagerOverHeadMemory(flinkConfig).getMebiBytes();
+		long jvmMemory = totalMemory - overHeadMemory;
+
+		log.debug("TaskExecutor {} will be started with JVM heap size {} MB, " +
+				"resource total memory is {} MB , user set over head memory is {} MB",
+			containerId,
+			jvmMemory,
+			totalMemory,
+			overHeadMemory);
+
 		final ContaineredTaskManagerParameters taskManagerParameters =
-				ContaineredTaskManagerParameters.create(flinkConfig, resource.getMemory(), numberOfTaskSlots);
+				ContaineredTaskManagerParameters.create(flinkConfig, jvmMemory, numberOfTaskSlots);
 
 		log.debug("TaskExecutor {} will be started with container size {} MB, JVM heap size {} MB, " +
 				"JVM direct memory limit {} MB",

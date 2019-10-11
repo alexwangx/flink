@@ -31,6 +31,17 @@ public class ConfigurationUtils {
 
 	private static final String[] EMPTY = new String[0];
 
+	public static MemorySize getTaskManagerOverHeadMemory(Configuration configuration) {
+		if (configuration.containsKey(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY.key())) {
+			return MemorySize.parse(configuration.getString(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY));
+		} else if (configuration.containsKey(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY_MB.key())) {
+			return MemorySize.parse(configuration.getInteger(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY_MB) + "m");
+		} else {
+			//use default value
+			return MemorySize.parse(configuration.getString(TaskManagerOptions.TASK_MANAGER_OVER_HEAD_MEMORY));
+		}
+	}
+
 	/**
 	 * Get job manager's heap memory. This method will check the new key
 	 * {@link JobManagerOptions#JOB_MANAGER_HEAP_MEMORY} and
